@@ -4,7 +4,7 @@ import { ButtonsWrapper, ModalContainer } from './edit-profile-modal.styles';
 import { TextInput } from '../../../screens/login/ui/login.styles';
 import { Loading } from '../../../shared/components/loader/ui/loader.component';
 import { useUpdateUser } from '@src/shared/data-access/hooks/mutations';
-import { User } from '@src/shared/services/api/types';
+import { User } from 'firebase/auth/react-native';
 
 interface EditProfileModalProps {
   user: User;
@@ -17,17 +17,12 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   onClose,
   onSuccesCallback,
 }) => {
-  const [username, onChangeUsername] = useState(user.username);
-  const [name, onChangeName] = useState(user.name);
+  const [name, onChangeName] = useState(user.displayName ?? '');
 
-  const { mutate, isLoading } = useUpdateUser(
-    user.id,
-    { ...user, username, name },
-    () => {
-      onSuccesCallback();
-      onClose();
-    },
-  );
+  const { mutate, isLoading } = useUpdateUser(user, { name }, () => {
+    onSuccesCallback();
+    onClose();
+  });
 
   const onSubmit = () => {
     mutate();
@@ -40,8 +35,6 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   return (
     <ModalContainer>
       <View>
-        <Text>Username</Text>
-        <TextInput onChangeText={onChangeUsername} value={username} />
         <Text>Name</Text>
         <TextInput onChangeText={onChangeName} value={name} />
       </View>

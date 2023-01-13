@@ -1,6 +1,18 @@
-import { ApiService } from '@src/shared/services/api';
-import { useQuery } from 'react-query';
+import { auth } from '@src/app/firebase';
+import { User } from 'firebase/auth/react-native';
+import { useEffect, useState, useCallback } from 'react';
 
-export const useGetCurrentUser = (id: string) => {
-  return useQuery(['currentUser', id], () => ApiService.getCurrentUser(id));
+export const useGetCurrentUser = () => {
+  // return useQuery(['currentUser', id], () => ApiService.getCurrentUser(id));
+  const [userData, setUserData] = useState<User | null>(null);
+
+  const fetchData = useCallback(() => {
+    setUserData(auth.currentUser);
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { user: userData, refetch: fetchData };
 };

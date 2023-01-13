@@ -1,18 +1,27 @@
-import { ApiService } from '@src/shared/services/api';
-import { User } from '@src/shared/services/api/types';
-import { useMutation } from 'react-query';
+import { updateProfile } from 'firebase/auth';
+import { User } from 'firebase/auth/react-native';
+import { useState } from 'react';
+
+export interface UserData {
+  name?: string;
+}
 
 export const useUpdateUser = (
-  userId: string,
-  userData: User,
+  user: User,
+  userData: UserData,
   successCallback: () => void,
 ) => {
-  return useMutation<User>(
-    () => {
-      return ApiService.updateUserInfo(userId, userData);
-    },
-    {
-      onSuccess: successCallback,
-    },
-  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  const mutate = () => {
+    setIsLoading(true);
+    updateProfile(user, {
+      displayName: userData.name,
+    }).then(() => {
+      successCallback();
+      setIsLoading(false);
+    });
+  };
+
+  return { mutate, isLoading };
 };

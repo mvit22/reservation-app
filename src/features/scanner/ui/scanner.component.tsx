@@ -138,3 +138,10 @@ export const Scanner: React.FC<ScannerProps> = ({}) => {
     </ScrollViewStyle>
   );
 };
+
+// const QRCodeData = {
+//   name: 'Table 1',
+//   id: 'table_1',
+//   reservation_people_number: 2,
+//   people_list: ['AAA', 'BBB'],
+// };

@@ -1,19 +1,23 @@
 import { Navigation } from '@src/routes';
+import { User } from 'firebase/auth/react-native';
 import React, { useState } from 'react';
 import { QueryClientProvider, QueryClient } from 'react-query';
+import { auth } from './firebase';
 
 const queryClient = new QueryClient();
 export const UserContext = React.createContext<{
-  userId?: string | null;
-  setUserId?: React.Dispatch<React.SetStateAction<string | null>>;
+  user?: User | null;
+  setUser?: React.Dispatch<React.SetStateAction<User | null>>;
 }>({});
 
 const App = () => {
-  const [userId, setUserId] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(auth.currentUser);
+  // const user = auth.currentUser?.uid;
+  // console.log(user);
   return (
     <QueryClientProvider client={queryClient}>
-      <UserContext.Provider value={{ userId, setUserId }}>
-        <Navigation isSignedIn={!!userId} />
+      <UserContext.Provider value={{ user, setUser }}>
+        <Navigation isSignedIn={!!user} />
       </UserContext.Provider>
     </QueryClientProvider>
   );

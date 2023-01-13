@@ -7,32 +7,23 @@ import {
   ModalContainer,
 } from '../../edit-profile-modal/ui/edit-profile-modal.styles';
 import { ShowPasswordView } from './change-password-modal.styles';
-import { useUpdateUser } from '@src/shared/data-access/hooks/mutations';
-import { User } from '@src/shared/services/api/types';
+import { User } from 'firebase/auth/react-native';
+import { useUpdateUserPassword } from '@src/shared/data-access/hooks/mutations';
 
 interface EditProfileModalProps {
   user: User;
   onClose: () => void;
-  onSuccesCallback: () => void;
 }
 
 export const ChangePasswordModal: React.FC<EditProfileModalProps> = ({
   user,
   onClose,
-  onSuccesCallback,
 }) => {
   const [password, onChangePassword] = useState('');
   const [passwordConfiramtion, onChangePasswordConfiramtion] = useState('');
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
-  const { mutate, isLoading } = useUpdateUser(
-    user.id,
-    { ...user, password },
-    () => {
-      onSuccesCallback();
-      onClose();
-    },
-  );
+  const { mutate, isLoading } = useUpdateUserPassword(user, password, onClose);
 
   const onSubmit = () => {
     if (password === passwordConfiramtion) {

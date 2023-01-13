@@ -1,43 +1,30 @@
 import { UserContext } from '@src/app/App';
-import { Loading } from '@src/shared/components/loader';
-import { useCreateUser } from '@src/shared/data-access/hooks/mutations';
-import React, { useContext, useEffect, useState } from 'react';
+import { AuthService } from '@src/shared/services/auth';
+import { User } from 'firebase/auth/react-native';
+import React, { useContext, useState } from 'react';
 import { Text, Alert } from 'react-native';
 import { LoginContainer, SubmitButton, TextInput } from './login.styles';
 
 export const SignupScreen = () => {
-  const [username, onChangeUsername] = useState('');
+  const [email, onChangeEmail] = useState('');
   const [password, onChangePassword] = useState('');
-  const { setUserId } = useContext(UserContext);
-
-  const { mutate, isError, isLoading } = useCreateUser(
-    username,
-    password,
-    setUserId,
-  );
+  const { setUser } = useContext(UserContext);
 
   const submitHandler = () => {
-    if (username && password) {
-      mutate();
+    if (email && password) {
+      const callback = (user: User) => {
+        setUser!(user);
+      };
+      AuthService.createUserWithEmailAndPassword(email, password, callback);
     } else {
       Alert.alert('Error', 'User credentials entered incorrectly');
     }
   };
 
-  useEffect(() => {
-    if (isError) {
-      Alert.alert('Error', 'User credentials entered incorrectly');
-    }
-  }, [isError]);
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
   return (
     <LoginContainer>
-      <Text>Username</Text>
-      <TextInput onChangeText={onChangeUsername} value={username} />
+      <Text>Email</Text>
+      <TextInput onChangeText={onChangeEmail} value={email} />
       <Text>Password</Text>
       <TextInput
         secureTextEntry

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -7,15 +7,14 @@ import {
   LogOutContainer,
   ProfileWrapper,
 } from './profile.styles';
-import { UserContext } from '@src/app/App';
 import { InfoItem } from '@src/entities/info-item';
 import { NavigatorParamList } from '@src/routes';
-import { Loading } from '@src/shared/components/loader';
 import { useGetCurrentUser } from '@src/shared/data-access/hooks/queries';
 import { useModal } from '@src/shared/hooks';
-import { ChangePasswordModal } from '@src/widgets/change-password-modal';
 import { EditProfileModal } from '@src/widgets/edit-profile-modal';
 import { Modal } from '@src/shared/components/modal';
+import { useSignOut } from '@src/shared/hooks/use-signout.hook';
+import { ChangePasswordModal } from '@src/widgets/change-password-modal';
 
 export type ProfileScreenProps = NativeStackScreenProps<
   NavigatorParamList,
@@ -23,25 +22,22 @@ export type ProfileScreenProps = NativeStackScreenProps<
 >;
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
-  const { userId, setUserId } = useContext(UserContext);
-  const { data: user, isLoading, refetch } = useGetCurrentUser(userId!);
+  // const { user: currentUser } = useContext(UserContext);
+  const { user, refetch } = useGetCurrentUser();
   const { isOpen, handleClose, handleOpen } = useModal();
   const {
     isOpen: isChangePasswordModalOpen,
     handleClose: handleChangePasswordModalClose,
     handleOpen: handleChangePasswordModalOpen,
   } = useModal();
-
-  if (isLoading) {
-    return <Loading />;
-  }
+  const { signOut } = useSignOut();
 
   return user ? (
     <ProfileWrapper>
       <View>
         <InfoTitle>Profile Info</InfoTitle>
-        <InfoItem title="Username" value={user.username} />
-        <InfoItem title="Full Name" value={user.name} />
+        <InfoItem title="Email" value={user.email} />
+        <InfoItem title="Name" value={user.displayName} />
         <ButtonWrapper>
           <Button title="Edit Profile Info" onPress={handleOpen} />
         </ButtonWrapper>
@@ -53,7 +49,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
         </ButtonWrapper>
       </View>
       <LogOutContainer>
-        <Button title="Log Out" onPress={() => setUserId!(null)} color="red" />
+        <Button title="Log Out" onPress={signOut} color="red" />
       </LogOutContainer>
       <Modal open={isOpen} onClose={handleClose} title="Edit Profile Info">
         <EditProfileModal
@@ -69,7 +65,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
         <ChangePasswordModal
           user={user}
           onClose={handleChangePasswordModalClose}
-          onSuccesCallback={refetch}
         />
       </Modal>
     </ProfileWrapper>

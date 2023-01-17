@@ -11,7 +11,7 @@ import {
 interface ModalProps {
   open: boolean;
   onClose: () => void;
-  title: string;
+  title?: string;
 }
 
 export const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
@@ -27,10 +27,12 @@ export const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
       visible={open}
       onRequestClose={onClose}>
       <CenteredView>
-        <ModalContainer>
-          <ModalHeader>
-            <ModalTitle>{title}</ModalTitle>
-          </ModalHeader>
+        <ModalContainer isPaddingsExist={!!title}>
+          {title && (
+            <ModalHeader>
+              <ModalTitle>{title}</ModalTitle>
+            </ModalHeader>
+          )}
           <ModalContent>{children}</ModalContent>
         </ModalContainer>
       </CenteredView>

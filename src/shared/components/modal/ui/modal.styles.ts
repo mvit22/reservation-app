@@ -1,10 +1,14 @@
 import styled from 'styled-components/native';
 
-export const ModalContainer = styled.View`
+interface ModalContainerProps {
+  isPaddingsExist?: boolean;
+}
+
+export const ModalContainer = styled.View<ModalContainerProps>`
   flex: 1;
   background-color: white;
   border-radius: 20px;
-  padding: 10px 30px 30px;
+  padding: ${props => (props.isPaddingsExist ? '10px 30px 30px' : '0')};
   width: 100%;
   box-shadow: 0px 2px #000;
 `;

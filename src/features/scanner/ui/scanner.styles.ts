@@ -16,7 +16,7 @@ export const ViewHeader = styled.View`
   height: 10%;
   padding-left: 15px;
   padding-top: 10px;
-  width: ${width};
+  width: ${width}px;
 `;
 
 export const TextTitle = styled.Text`
@@ -27,11 +27,15 @@ export const TextTitle = styled.Text`
   color: white;
 `;
 
-export const CardView = styled.View`
+interface CardViewProps {
+  isResultView?: boolean;
+}
+
+export const CardView = styled.View<CardViewProps>`
   width: ${width - 32}px;
   align-self: center;
   justify-content: flex-start;
-  align-items: center;
+  ${props => (props.isResultView ? '' : 'align-items: center;')}
   border-radius: 10px;
   padding: 25px;
   margin-left: 5px;
@@ -44,6 +48,7 @@ export const ButtonWrapper = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
 `;
 
 export const ScanButton = styled.TouchableOpacity`
@@ -91,4 +96,9 @@ export const ButtonTextStyle = styled.Text`
   color: black;
   font-weight: bold;
   color: #2196f3;
+`;
+
+export const Image = styled.Image`
+  height: 36px;
+  width: 36px;
 `;

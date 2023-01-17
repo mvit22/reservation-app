@@ -20,12 +20,17 @@ export const LoginScreen = () => {
   return (
     <LoginContainer>
       <Text>Email</Text>
-      <TextInput onChangeText={onChangeUsername} value={email} />
+      <TextInput
+        onChangeText={onChangeUsername}
+        value={email}
+        autoCapitalize="none"
+      />
       <Text>Password</Text>
       <TextInput
         secureTextEntry
         onChangeText={onChangePassword}
         value={password}
+        autoCapitalize="none"
       />
       <SubmitButton title="Sign In" onPress={submitHandler} />
     </LoginContainer>

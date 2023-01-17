@@ -1,6 +1,8 @@
+/* eslint-disable react-native/no-inline-styles */
 import { Navigation } from '@src/routes';
 import { User } from 'firebase/auth/react-native';
 import React, { useState } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { auth } from './firebase';
 
@@ -12,13 +14,13 @@ export const UserContext = React.createContext<{
 
 const App = () => {
   const [user, setUser] = useState<User | null>(auth.currentUser);
-  // const user = auth.currentUser?.uid;
-  // console.log(user);
   return (
     <QueryClientProvider client={queryClient}>
-      <UserContext.Provider value={{ user, setUser }}>
-        <Navigation isSignedIn={!!user} />
-      </UserContext.Provider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <UserContext.Provider value={{ user, setUser }}>
+          <Navigation isSignedIn={!!user} />
+        </UserContext.Provider>
+      </GestureHandlerRootView>
     </QueryClientProvider>
   );
 };

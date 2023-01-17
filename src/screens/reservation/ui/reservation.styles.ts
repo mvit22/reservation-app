@@ -5,3 +5,7 @@ export const ScreenWrapper = styled.View`
   /* padding: 20px; */
   justify-content: space-between;
 `;
+
+export const ButtonWrapper = styled.View`
+  padding: 10px;
+`;

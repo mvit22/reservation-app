@@ -1,5 +1,12 @@
-import { Text, Linking, View, Image, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import {
+  Text,
+  Linking,
+  View,
+  TouchableOpacity,
+  Alert,
+  Image as RNImage,
+} from 'react-native';
+import React, { useState, useMemo } from 'react';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BarCodeReadEvent } from 'react-native-camera';
 import {
@@ -9,27 +16,43 @@ import {
   ButtonWrapper,
   CardView,
   CenteredText,
-  DescText,
+  Image,
   ScanButton,
   ScrollViewStyle,
   TextTitle,
   ViewHeader,
 } from './scanner.styles';
+import { ReservationInfo } from '@src/widgets/reservation-info';
+import { useMakeReservation } from '@src/shared/data-access/hooks/mutations';
 
-interface ScannerProps {}
+interface ScannerProps {
+  handleScannerClose: () => void;
+  reservations: {
+    name: string;
+    id: string;
+    people_number: number;
+  }[];
+  onMakeReservationCallback: () => void;
+}
 
-export const Scanner: React.FC<ScannerProps> = ({}) => {
+interface QRCodeData {
+  id: string;
+  data_role: string;
+}
+
+export const Scanner: React.FC<ScannerProps> = ({
+  handleScannerClose,
+  reservations,
+  onMakeReservationCallback,
+}) => {
   const [scannerNode, setScannerNode] = useState<QRCodeScanner | null>(null);
-  const [scan, setScan] = useState(false);
   const [scanResult, setScanResult] = useState(false);
 
   const [result, setResult] = useState<BarCodeReadEvent | null>(null);
 
   const onSuccess = (e: BarCodeReadEvent) => {
     const check = e.data.substring(0, 4);
-    console.log('scanned data' + check);
     setResult(e);
-    setScan(false);
     setScanResult(true);
     if (check === 'http') {
       Linking.openURL(e.data).catch(err =>
@@ -37,79 +60,73 @@ export const Scanner: React.FC<ScannerProps> = ({}) => {
       );
     } else {
       setResult(e);
-      setScan(false);
       setScanResult(true);
     }
   };
-  const activeQR = () => {
-    setScan(true);
-  };
-  const scanAgain = () => {
-    setScan(true);
+
+  const resultData: QRCodeData | undefined = useMemo(() => {
+    return result?.data && JSON.parse(result.data);
+  }, [result?.data]);
+
+  const onMakeReservation = () => {
+    setResult(null);
     setScanResult(false);
+    onMakeReservationCallback();
+    handleScannerClose();
+    Alert.alert('Success', 'Reservation was successful!');
+  };
+
+  const { mutate } = useMakeReservation(onMakeReservation);
+
+  const scanAgain = () => {
+    setScanResult(false);
+  };
+
+  const handleClose = () => {
+    handleScannerClose();
+    setScanResult(false);
+  };
+
+  const makeReservationHandler = (data: {
+    name: string;
+    id: string;
+    people_number: number;
+  }) => {
+    mutate(data);
   };
 
   return (
     <ScrollViewStyle>
       <>
-        {!scan && !scanResult ? (
-          <CardView>
-            <Image
-              source={require('@src/shared/assets/back.png')}
-              style={{ height: 36, width: 36 }}
-            />
-            <DescText numberOfLines={8}>
-              Please move your camera {'\n'} over the QR Code
-            </DescText>
-            <Image
-              source={require('@src/shared/assets/qr-code.png')}
-              style={{ margin: 20 }}
-            />
-            <ScanButton onPress={activeQR}>
-              <ButtonWrapper>
-                <Image
-                  source={require('@src/shared/assets/camera.png')}
-                  style={{ height: 36, width: 36 }}
-                />
-                <ButtonTextStyle>Scan QR Code</ButtonTextStyle>
-              </ButtonWrapper>
-            </ScanButton>
-          </CardView>
-        ) : (
-          <ViewHeader>
-            <TouchableOpacity
-              onPress={() => {
-                setScan(false);
-                setScanResult(false);
-              }}>
-              <Image
-                source={require('@src/shared/assets/back.png')}
-                style={{ height: 36, width: 36 }}
-              />
-            </TouchableOpacity>
-            <TextTitle>Back</TextTitle>
-          </ViewHeader>
-        )}
-        {scanResult && (
+        <ViewHeader>
+          <TouchableOpacity onPress={handleClose}>
+            <Image source={require('@src/shared/assets/back.png')} />
+          </TouchableOpacity>
+          <TextTitle>Back</TextTitle>
+        </ViewHeader>
+        {scanResult ? (
           <>
-            <TextTitle>Result</TextTitle>
-            <CardView>
-              <Text>Type: {result?.type}</Text>
-              <Text>Result: {result?.data}</Text>
-              <Text numberOfLines={1}>RawData: {result?.rawData}</Text>
+            <CardView isResultView={scanResult}>
+              {resultData?.data_role === 'reservation_app' ? (
+                <ReservationInfo
+                  id={resultData.id}
+                  makeReservation={makeReservationHandler}
+                  isHelpTextVisible={
+                    !!reservations.find(({ id }) => id === resultData.id)
+                  }
+                />
+              ) : (
+                <Text>Wrong QR-Code, please try again</Text>
+              )}
               <ScanButton onPress={scanAgain}>
                 <ButtonWrapper>
-                  <Image
-                    source={require('@src/shared/assets/camera.png')}
-                    style={{ height: 36, width: 36 }}
-                  />
+                  <Image source={require('@src/shared/assets/camera.png')} />
                   <ButtonTextStyle>Click to scan again</ButtonTextStyle>
                 </ButtonWrapper>
               </ScanButton>
             </CardView>
           </>
-        )}
-        {scan && (
+        ) : (
           <QRCodeScanner
             reactivate={true}
             showMarker={true}
@@ -124,10 +141,10 @@ export const Scanner: React.FC<ScannerProps> = ({}) => {
               <View>
                 <BottomContent
                   source={require('@src/shared/assets/bottom-panel.png')}>
-                  <BottomScanButton
-                    onPress={() => scannerNode?.reactivate()}
-                    onLongPress={() => setScan(false)}>
-                    <Image source={require('@src/shared/assets/camera2.png')} />
+                  <BottomScanButton onPress={() => scannerNode?.reactivate()}>
+                    <RNImage
+                      source={require('@src/shared/assets/camera2.png')}
+                    />
                   </BottomScanButton>
                 </BottomContent>
               </View>
@@ -140,8 +157,6 @@ export const Scanner: React.FC<ScannerProps> = ({}) => {
 };
 
 // const QRCodeData = {
-//   name: 'Table 1',
 //   id: 'table_1',
-//   reservation_people_number: 2,
-//   people_list: ['AAA', 'BBB'],
+//   data_role: 'reservation_app',
 // };

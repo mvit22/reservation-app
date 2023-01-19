@@ -1,4 +1,4 @@
-import { Button, FlatList, TouchableOpacity } from 'react-native';
+import { Button, FlatList } from 'react-native';
 import React, { useState } from 'react';
 import {
   ButtonsWrapper,
@@ -8,6 +8,10 @@ import ListItem from './list-item.component';
 import { useModal } from '@src/shared/hooks';
 import { Modal } from '@src/shared/components/modal';
 import { ReservationInfo } from '@src/widgets/reservation-info';
+import {
+  gestureHandlerRootHOC,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 
 interface ReservationsListProps {
   reservations: {
@@ -18,7 +22,7 @@ interface ReservationsListProps {
   onClose: () => void;
 }
 
-export const ReservationsListModal: React.FC<ReservationsListProps> = ({
+const ReservationsList: React.FC<ReservationsListProps> = ({
   reservations,
   onClose,
 }) => {
@@ -56,3 +60,5 @@ export const ReservationsListModal: React.FC<ReservationsListProps> = ({
     </ModalContainer>
   );
 };
+
+export const ReservationsListModal = gestureHandlerRootHOC(ReservationsList);

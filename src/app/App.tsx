@@ -15,13 +15,13 @@ export const UserContext = React.createContext<{
 const App = () => {
   const [user, setUser] = useState<User | null>(auth.currentUser);
   return (
-    <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
         <UserContext.Provider value={{ user, setUser }}>
           <Navigation isSignedIn={!!user} />
         </UserContext.Provider>
-      </GestureHandlerRootView>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 };
 

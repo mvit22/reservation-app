@@ -6,16 +6,12 @@ import {
   SwipedRow,
 } from './delete-swipe-action.styles';
 
-interface DeleteSwipeActionProps {
-  onClick: () => void;
-}
-
-export const DeleteSwipeAction: React.FC<DeleteSwipeActionProps> = () => {
+export const DeleteSwipeAction = (removeHandler: () => void) => {
   return (
     <SwipedRow>
       <DeleteButton>
-        <TouchableOpacity>
-          <DeleteButtonText>Delete</DeleteButtonText>
+        <TouchableOpacity onPress={removeHandler}>
+          <DeleteButtonText>Remove</DeleteButtonText>
         </TouchableOpacity>
       </DeleteButton>
     </SwipedRow>

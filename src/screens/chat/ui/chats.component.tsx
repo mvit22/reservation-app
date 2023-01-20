@@ -13,14 +13,16 @@ import { ChatModal } from '@src/widgets/chat-modal';
 import { Loading } from '@src/shared/components/loader';
 import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import { DeleteSwipeAction } from '@src/shared/components/delete-swipe-action';
+import { useRemoveReservation } from '@src/shared/data-access/hooks/mutations/use-remove-reservation.hook';
 
 type Props = NativeStackScreenProps<NavigatorParamList, 'Chat'>;
 
 export const ChatsScreen = ({}: Props) => {
   const { user } = useGetCurrentUser();
-  const { userData, isLoading } = useGetUserData(user?.uid!);
+  const { userData, isLoading, refetch } = useGetUserData(user?.uid!);
   const [reservationId, setReservationId] = useState<string | null>(null);
   const { isOpen, handleClose, handleOpen } = useModal();
+  const { mutate } = useRemoveReservation(refetch);
 
   const rowClickHandler = (id: string) => {
     setReservationId(id);
@@ -36,15 +38,21 @@ export const ChatsScreen = ({}: Props) => {
       <FlatList
         data={userData?.reservations ?? []}
         keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <Swipeable renderRightActions={DeleteSwipeAction}>
-            <TouchableOpacity onPress={() => rowClickHandler(item.id)}>
-              <ItemContainer>
-                <Title>{item.name}</Title>
-              </ItemContainer>
-            </TouchableOpacity>
-          </Swipeable>
-        )}
+        renderItem={({ item }) => {
+          const removeHandler = () => {
+            mutate(item);
+          };
+          return (
+            <Swipeable
+              renderRightActions={() => DeleteSwipeAction(removeHandler)}>
+              <TouchableOpacity onPress={() => rowClickHandler(item.id)}>
+                <ItemContainer>
+                  <Title>{item.name}</Title>
+                </ItemContainer>
+              </TouchableOpacity>
+            </Swipeable>
+          );
+        }}
       />
       {reservationId && (
         <Modal

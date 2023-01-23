@@ -8,6 +8,7 @@ import { ProfileScreen } from '@src/screens/profile';
 import { ReservationScreen } from '@src/screens/reservation';
 import { tabIcon } from './lib/routes.helper';
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import { PlaceRatingScreen } from '@src/screens/reservation copy';
 
 export type NavigatorParamList = {
   Profile: undefined;
@@ -15,6 +16,7 @@ export type NavigatorParamList = {
   SignUp: undefined;
   Reservation: undefined;
   Chat: undefined;
+  ['Place Rating']: undefined;
 };
 
 const Tab = createBottomTabNavigator<NavigatorParamList>();
@@ -52,6 +54,11 @@ export const Navigation: React.FC<NavigationProps> = ({ isSignedIn }) => {
               name="Chat"
               component={gestureHandlerRootHOC(ChatsScreen)}
               options={{ title: 'Chat' }}
+            />
+            <Tab.Screen
+              name="Place Rating"
+              component={gestureHandlerRootHOC(PlaceRatingScreen)}
+              options={{ title: 'Place Rating' }}
             />
           </>
         ) : (

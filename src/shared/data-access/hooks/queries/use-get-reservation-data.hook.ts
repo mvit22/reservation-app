@@ -6,6 +6,10 @@ import { Alert } from 'react-native';
 interface ReservationData {
   name: string;
   people_list: string[];
+  rating: {
+    plus: number;
+    minus: number;
+  };
 }
 
 export const useGetReservationData = (id: string) => {

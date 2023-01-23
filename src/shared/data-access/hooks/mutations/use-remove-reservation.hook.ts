@@ -5,14 +5,14 @@ import { useGetCurrentUser } from '../queries';
 
 export const useRemoveReservation = (successCallback?: () => void) => {
   const { user } = useGetCurrentUser();
-  const mutate = (reservationId: {
+  const mutate = (reservation: {
     name: string;
     id: string;
     people_number: number;
   }) => {
     const userRef = doc(db, 'users', user?.uid!);
     updateDoc(userRef, {
-      reservations: arrayRemove(reservationId),
+      reservations: arrayRemove(reservation),
     })
       .then(() => {
         successCallback && successCallback();

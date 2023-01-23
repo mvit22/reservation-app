@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, View } from 'react-native';
+import { Button, NativeModules, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   ButtonWrapper,
@@ -31,6 +31,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
     handleOpen: handleChangePasswordModalOpen,
   } = useModal();
   const { signOut } = useSignOut();
+
+  const { RNDeviceInfo } = NativeModules;
+
+  console.log(RNDeviceInfo.getBatteryLevelSync());
+  console.log(RNDeviceInfo.getFreeDiskStorageSync());
+  console.log(RNDeviceInfo.isHeadphonesConnectedSync());
 
   return user ? (
     <ProfileWrapper>

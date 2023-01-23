@@ -41,7 +41,7 @@ export const ReservationInfo: React.FC<ReservationInfoProps> = ({
       makeReservation({
         name: reservationData?.name,
         id,
-        people_number: reservationData?.people_list.length,
+        people_number: reservationData?.people_list.length + 1,
       });
   };
 

@@ -8,6 +8,10 @@ interface UserData {
     name: string;
     id: string;
     people_number: number;
+    rating: {
+      plus: number;
+      minus: number;
+    };
   }[];
 }
 

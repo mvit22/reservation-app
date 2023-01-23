@@ -2,11 +2,13 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { ChatScreen } from '@src/screens/chat';
+import { ChatsScreen } from '@src/screens/chat';
 import { LoginScreen, SignupScreen } from '@src/screens/login';
 import { ProfileScreen } from '@src/screens/profile';
 import { ReservationScreen } from '@src/screens/reservation';
 import { tabIcon } from './lib/routes.helper';
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import { PlaceRatingScreen } from '@src/screens/reservation copy';
 
 export type NavigatorParamList = {
   Profile: undefined;
@@ -14,6 +16,7 @@ export type NavigatorParamList = {
   SignUp: undefined;
   Reservation: undefined;
   Chat: undefined;
+  ['Place Rating']: undefined;
 };
 
 const Tab = createBottomTabNavigator<NavigatorParamList>();
@@ -39,30 +42,35 @@ export const Navigation: React.FC<NavigationProps> = ({ isSignedIn }) => {
           <>
             <Tab.Screen
               name="Profile"
-              component={ProfileScreen}
+              component={gestureHandlerRootHOC(ProfileScreen)}
               options={{ title: 'Profile' }}
             />
             <Tab.Screen
               name="Reservation"
-              component={ReservationScreen}
+              component={gestureHandlerRootHOC(ReservationScreen)}
               options={{ title: 'Reservation' }}
             />
             <Tab.Screen
               name="Chat"
-              component={ChatScreen}
+              component={gestureHandlerRootHOC(ChatsScreen)}
               options={{ title: 'Chat' }}
+            />
+            <Tab.Screen
+              name="Place Rating"
+              component={gestureHandlerRootHOC(PlaceRatingScreen)}
+              options={{ title: 'Place Rating' }}
             />
           </>
         ) : (
           <>
             <Tab.Screen
               name="SignIn"
-              component={LoginScreen}
+              component={gestureHandlerRootHOC(LoginScreen)}
               options={{ title: 'Sign In' }}
             />
             <Tab.Screen
               name="SignUp"
-              component={SignupScreen}
+              component={gestureHandlerRootHOC(SignupScreen)}
               options={{ title: 'Sign Up' }}
             />
           </>

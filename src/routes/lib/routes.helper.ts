@@ -24,6 +24,10 @@ export const tabIcon = (name: string, focused: boolean) => {
       iconName = focused ? 'ios-add-circle' : 'ios-add-circle-outline';
       break;
     }
+    case 'Place Rating': {
+      iconName = focused ? 'ios-heart-sharp' : 'ios-heart-outline';
+      break;
+    }
   }
 
   return iconName;
